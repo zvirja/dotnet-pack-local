@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/3t8wauku3bew47ty/branch/main?svg=true)](https://ci.appveyor.com/project/Zvirja/dotnet-pack-local/branch/main) [![Nuget version](https://img.shields.io/nuget/v/dotnet-pack-local.svg)](https://www.nuget.org/packages/dotnet-pack-local/)
+
 # dotnet-build-local
 
 It's a dotnet tool to pack project to a local NuGet repo. It takes care of package version to make sure that it steadily increases.
