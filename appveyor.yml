@@ -1,0 +1,21 @@
+image: Visual Studio 2019
+
+environment:
+  NUGET_API_KEY:
+    secure: DYAFgh3C1t+C888puxhkWrAcP3Gzcc+HWTGXfz00w24URg68iH/b++PvYW4nYr/C
+
+pull_requests:
+  do_not_increment_build_number: true
+
+build_script:
+- ps: |
+    (& cmd /c); [console]::OutputEncoding = New-Object System.Text.UTF8Encoding;
+    & .\build.ps1 --target AppVeyor_Pipeline --nuget-key "$($Env:NUGET_API_KEY)" --build-version git  --build-number $($Env:APPVEYOR_BUILD_NUMBER) --no-logo
+
+test: off
+
+artifacts:
+- path: artifacts\*.nupkg
+  name: NuGet
+
+deploy: off
