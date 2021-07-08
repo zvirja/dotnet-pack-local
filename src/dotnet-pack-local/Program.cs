@@ -33,8 +33,11 @@ namespace DotnetPackLocal
         {
             AnsiConsole.MarkupLine("[olive]NuGet output folder:[/] {0}", output);
 
-            var currentRepo = GetRootPath();
-            AnsiConsole.MarkupLine("[olive]Current repo root:[/] {0}", currentRepo);
+            var currentDir = Directory.GetCurrentDirectory();
+            AnsiConsole.MarkupLine("[olive]Current directory:[/] {0}", currentDir);
+
+            var repoRoot = GetRepoRoot();
+            AnsiConsole.MarkupLine("[olive]Repo root:[/] {0}", repoRoot);
 
             var configuration = release ? "Release" : "Debug";
             AnsiConsole.MarkupLine("[olive]Build configuration:[/] {0}", configuration);
@@ -42,7 +45,7 @@ namespace DotnetPackLocal
             var includeSymbols = symbols ?? !release;
             AnsiConsole.MarkupLine("[olive]Include symbols to package:[/] {0}", includeSymbols);
 
-            var version = Configuration.GetNextVersion(currentRepo);
+            var version = Configuration.GetNextVersion(repoRoot);
             AnsiConsole.MarkupLine("[green]Pack version:[/] {0}", version);
 
             AnsiConsole.WriteLine();
@@ -57,7 +60,7 @@ namespace DotnetPackLocal
 
             var proc = Process.Start(new ProcessStartInfo("dotnet", dotnetArgs)
             {
-                WorkingDirectory = currentRepo
+                WorkingDirectory = currentDir
             });
             if (proc == null)
             {
@@ -98,7 +101,7 @@ namespace DotnetPackLocal
             }
         }
 
-        private static string GetRootPath()
+        private static string GetRepoRoot()
         {
             var rootDir = Directory.GetCurrentDirectory();
             if (Repository.IsValid(rootDir))
