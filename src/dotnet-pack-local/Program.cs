@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using LibGit2Sharp;
 using Spectre.Console;
+using Version = System.Version;
 
 namespace DotnetPackLocal
 {
@@ -18,15 +19,24 @@ namespace DotnetPackLocal
                 return 1;
             }
 
-            var rootCommand = new RootCommand("Pack current folder as NuGet")
+            var rootCmd = new RootCommand("Pack current folder as NuGet")
             {
                 new Option<string>(new[] {"--output", "-o"}, GetNuGetLocalRepoPath, "Output path for NuGet packages"),
                 new Option<bool>("--release", () => false, "Pack project in release mode"),
                 new Option<bool?>("--symbols", () => null, "Include symbols. By default included in DEBUG build only"),
-            };
-            rootCommand.Handler = CommandHandler.Create<string, bool, bool?>(HandlePackRepo);
 
-            return rootCommand.Invoke(args);
+                new Command("set-last-version", "Set last version for current repo")
+                {
+                    Handler = CommandHandler.Create(HandleSetBaseVersion)
+                },
+                new Command("get-last-version", "Get last version for current repo")
+                {
+                    Handler = CommandHandler.Create(HandleGetBaseVersion)
+                }
+            };
+            rootCmd.Handler = CommandHandler.Create<string, bool, bool?>(HandlePackRepo);
+
+            return rootCmd.Invoke(args);
         }
 
         private static int HandlePackRepo(string output, bool release, bool? symbols)
@@ -36,7 +46,7 @@ namespace DotnetPackLocal
             var currentDir = Directory.GetCurrentDirectory();
             AnsiConsole.MarkupLine("[olive]Current directory:[/] {0}", currentDir);
 
-            var repoRoot = GetRepoRoot();
+            var repoRoot = GetNormalizedRepoRoot();
             AnsiConsole.MarkupLine("[olive]Repo root:[/] {0}", repoRoot);
 
             var configuration = release ? "Release" : "Debug";
@@ -45,7 +55,7 @@ namespace DotnetPackLocal
             var includeSymbols = symbols ?? !release;
             AnsiConsole.MarkupLine("[olive]Include symbols to package:[/] {0}", includeSymbols);
 
-            var version = Configuration.GetNextVersion(repoRoot);
+            var version = Configuration.GetNextRepoVersion(repoRoot);
             AnsiConsole.MarkupLine("[green]Pack version:[/] {0}", version);
 
             AnsiConsole.WriteLine();
@@ -80,6 +90,43 @@ namespace DotnetPackLocal
             return 0;
         }
 
+        private static void HandleSetBaseVersion()
+        {
+            string currentDir = Directory.GetCurrentDirectory();
+            AnsiConsole.MarkupLine("[olive]Current directory:[/] {0}", currentDir);
+ 
+            string repoRoot = GetNormalizedRepoRoot();
+            AnsiConsole.MarkupLine("[olive]Repo root:[/] {0}", repoRoot);
+
+            Version lastRepoVersion = Configuration.GetLastRepoVersion(repoRoot);
+            AnsiConsole.MarkupLine("[olive]Last repo version:[/] {0}", lastRepoVersion);
+
+            for (;;)
+            {
+                var newLastVerStr = AnsiConsole.Ask<string>("Enter new base version: ");
+                if (Version.TryParse(newLastVerStr, out Version? newLastVer))
+                {
+                    Configuration.SetLastRepoVersion(repoRoot, newLastVer);
+                    AnsiConsole.MarkupLine("[green]Successfully set base version to {0}[/]", newLastVer);
+                    break;
+                }
+
+                AnsiConsole.MarkupLine("[red]Cannot parse value as valid version[/]");
+            }
+        }
+        
+        private static void HandleGetBaseVersion()
+        {
+            string currentDir = Directory.GetCurrentDirectory();
+            AnsiConsole.MarkupLine("[olive]Current directory:[/] {0}", currentDir);
+ 
+            string repoRoot = GetNormalizedRepoRoot();
+            AnsiConsole.MarkupLine("[olive]Repo root:[/] {0}", repoRoot);
+
+            Version lastRepoVersion = Configuration.GetLastRepoVersion(repoRoot);
+            AnsiConsole.MarkupLine("[olive]Last repo version:[/] {0}", lastRepoVersion);
+        }
+
         private static string GetNuGetLocalRepoPath()
         {
             string? localNugetStore = Configuration.LocalNugetStore;
@@ -101,15 +148,17 @@ namespace DotnetPackLocal
             }
         }
 
-        private static string GetRepoRoot()
+        private static string GetNormalizedRepoRoot()
         {
-            var rootDir = Directory.GetCurrentDirectory();
-            if (Repository.IsValid(rootDir))
+            var repoRoot = Directory.GetCurrentDirectory();
+            if (Repository.IsValid(repoRoot))
             {
-                rootDir = new Repository(rootDir).Info.WorkingDirectory;
+                repoRoot = new Repository(repoRoot).Info.WorkingDirectory;
             }
+            
+            repoRoot = repoRoot.ToLowerInvariant().TrimEnd('/').TrimEnd('\\');
 
-            return rootDir;
+            return repoRoot;
         }
     }
 }

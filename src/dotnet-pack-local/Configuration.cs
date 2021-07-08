@@ -13,18 +13,24 @@ namespace DotnetPackLocal
             set => SetRegValue("LocalNuGetStore", value);
         }
 
-        public static Version GetNextVersion(string repoRoot)
+        public static Version GetLastRepoVersion(string normalizedRepoRoot)
         {
-            repoRoot = repoRoot.ToLowerInvariant().TrimEnd('/').TrimEnd('\\');
-
-            string? lastKnownVersionStr = GetRegValue(repoRoot);
-            var lastKnownVersion = lastKnownVersionStr != null
+            string? lastKnownVersionStr = GetRegValue(normalizedRepoRoot);
+            return lastKnownVersionStr != null
                 ? Version.Parse(lastKnownVersionStr)
                 : new Version(0, 99, 0);
+        }
 
+        public static void SetLastRepoVersion(string normalizedRepoRoot, Version version)
+        {
+            SetRegValue(normalizedRepoRoot, version.ToString());
+        }
+
+        public static Version GetNextRepoVersion(string normalizedRepoRoot)
+        {
+            Version lastKnownVersion = GetLastRepoVersion(normalizedRepoRoot);
             var nextVersion = new Version(lastKnownVersion.Major, lastKnownVersion.Minor, lastKnownVersion.Build + 1);
-            SetRegValue(repoRoot, nextVersion.ToString());
-
+            SetLastRepoVersion(normalizedRepoRoot, nextVersion);
             return nextVersion;
         }
 
