@@ -21,8 +21,8 @@ namespace DotnetPackLocal.Commands
             var rootCmd = new RootCommand("Pack current folder as NuGet")
             {
                 new Option<string>(new[] {"--output", "-o"}, () => nugetRepositoryPath, "Output path for NuGet packages"),
-                new Option<bool>("--release", () => false, "Pack project in release mode"),
-                new Option<bool?>("--symbols", () => null, "Include symbols. By default included in DEBUG build only"),
+                new Option("--release", "Pack project in release mode"),
+                new Option<bool?>("--symbols", () => null, "Specify whether to include symbols. By default included in DEBUG build only"),
 
                 new Command("get-last-version", "Get last version for current repo")
                 {
