@@ -12,6 +12,16 @@ Tool is distributed as a dotnet tool. To install it you should have .NET Core 3.
 dotnet tool install -g dotnet-pack-local
 ```
 
+### Update
+
+To update the tool, run:
+
+```
+dotnet tool update -g dotnet-pack-local
+```
+
+Run `dotnet-pack-local --version` to check installed version.
+
 # Usage
 
 To run the tool just navigate to a directory which is a part of the repo (usual repository root), open command line and run the tool by name:
