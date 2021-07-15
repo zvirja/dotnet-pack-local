@@ -1,37 +1,27 @@
 ﻿using System;
 using Microsoft.Win32;
 
-namespace DotnetPackLocal
+namespace DotnetPackLocal.Persistence
 {
-    public static class Configuration
+    internal class RegistryConfigStore : IConfigStore
     {
         private const string RegistryStoreKey = @"SOFTWARE\Zvirja\DotnetPackLocal";
 
-        public static string? LocalNugetStore
-        {
-            get => GetRegValue("LocalNuGetStore");
-            set => SetRegValue("LocalNuGetStore", value);
-        }
+        public string? GetLocalNuGetRepositoryPath() => GetRegValue("LocalNuGetStore");
 
-        public static Version GetLastRepoVersion(string normalizedRepoRoot)
+        public void SetLocalNuGetRepositoryPath(string? value) => SetRegValue("LocalNuGetStore", value);
+
+        public Version? GetLastVersionForProject(string repoPath)
         {
-            string? lastKnownVersionStr = GetRegValue(normalizedRepoRoot);
+            string? lastKnownVersionStr = GetRegValue(repoPath);
             return lastKnownVersionStr != null
                 ? Version.Parse(lastKnownVersionStr)
-                : new Version(0, 99, 0);
+                : null;
         }
 
-        public static void SetLastRepoVersion(string normalizedRepoRoot, Version version)
+        public void SetLastVersionForProject(Version version, string repoPath)
         {
-            SetRegValue(normalizedRepoRoot, version.ToString());
-        }
-
-        public static Version GetNextRepoVersion(string normalizedRepoRoot)
-        {
-            Version lastKnownVersion = GetLastRepoVersion(normalizedRepoRoot);
-            var nextVersion = new Version(lastKnownVersion.Major, lastKnownVersion.Minor, lastKnownVersion.Build + 1);
-            SetLastRepoVersion(normalizedRepoRoot, nextVersion);
-            return nextVersion;
+            SetRegValue(repoPath, version.ToString());
         }
 
         private static void SetRegValue(string valueName, string? value)
