@@ -37,7 +37,7 @@ namespace DotnetPackLocal.Commands
                              $"/p:Version={version} " +
                              $"--output {output} " +
                              $"--configuration {configuration} " +
-                             (includeSymbols ? "/p:AllowedOutputExtensionsInPackageBuildOutputFolder=\\\".dll;.exe;.json;.xml.pdb\\\" " : "") +
+                             (includeSymbols ? "/p:AllowedOutputExtensionsInPackageBuildOutputFolder=\\\".dll;.exe;.json;.xml;.pdb\\\" " : "") +
                              $"--verbosity=minimal ";
             AnsiConsole.MarkupLine("[grey]dotnet {0}[/]", dotnetArgs);
 
