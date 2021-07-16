@@ -29,6 +29,8 @@ To run the tool just navigate to a directory which is a part of the repo (usual 
 dotnet-pack-local
 ```
 
+Run tool with `--help` flag to see all the supported commands and flags.
+
 ## Options
 
 Run the tool with `--help` or just `-h` flag to see the possible options.
