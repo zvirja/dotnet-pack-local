@@ -2,5 +2,7 @@ root = true
 
 [*.cs]
 max_line_length = 170
-trim_trailing_whitespace: true
 tab_width = 4
+trim_trailing_whitespace: true
+insert_final_newline: true
+
