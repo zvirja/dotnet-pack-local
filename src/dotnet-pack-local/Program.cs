@@ -1,4 +1,5 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.CommandLine;
 using System.Runtime.InteropServices;
 using DotnetPackLocal;
 using DotnetPackLocal.Commands;
@@ -23,8 +24,21 @@ ServiceProvider serviceProvider = new ServiceCollection()
     //
     .BuildServiceProvider();
 
-var configStore = serviceProvider.GetRequiredService<IConfigStore>();
-string nugetLocalRepoPath = Prompts.OptionallyAskForValidNuGetRepoPath(configStore.GetLocalNuGetRepositoryPath());
+string nuGetRepositoryPath = GetOrConfigureNuGetRepositoryPath();
 
-RootCommand rootCmd = serviceProvider.GetRequiredService<RootCommandBuilder>().BuildRootCommand(nugetLocalRepoPath);
+RootCommand rootCmd = serviceProvider.GetRequiredService<RootCommandBuilder>().BuildRootCommand(nuGetRepositoryPath);
 return rootCmd.Invoke(args);
+
+string GetOrConfigureNuGetRepositoryPath()
+{
+    var configStore = serviceProvider.GetRequiredService<IConfigStore>();
+    string? configuredNuGetRepositoryPath = configStore.GetLocalNuGetRepositoryPath();
+
+    string validNuGetLocalRepoPath = Prompts.OptionallyAskForValidNuGetRepoPath(configuredNuGetRepositoryPath);
+    if (!string.Equals(validNuGetLocalRepoPath, configuredNuGetRepositoryPath, StringComparison.Ordinal))
+    {
+        configStore.SetLocalNuGetRepositoryPath(validNuGetLocalRepoPath);
+    }
+
+    return validNuGetLocalRepoPath;
+}
