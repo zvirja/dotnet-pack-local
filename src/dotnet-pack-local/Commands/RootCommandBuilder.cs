@@ -21,14 +21,14 @@ namespace DotnetPackLocal.Commands
             var rootCmd = new RootCommand("Pack current folder as NuGet")
             {
                 new Option<string>(new[] {"--output", "-o"}, () => nugetRepositoryPath, "Output path for NuGet packages"),
-                new Option("--release", "Pack project in release mode"),
+                new Option<bool>("--release", "Pack project in release mode"),
                 new Option<bool?>("--symbols", () => null, "Specify whether to include symbols. By default included in DEBUG build only"),
 
                 new Command("get-last-version", "Get last version for current repo")
                 {
                     Handler = CommandHandler.Create(_lastVersionCommand.HandleGet)
                 },
-                new Command("set-last-version", "Set last version for current repo")
+                new Command("set-last-version", "Set last version for current repo (interactive mode)")
                 {
                     Handler = CommandHandler.Create(_lastVersionCommand.HandleSet)
                 },
@@ -36,7 +36,7 @@ namespace DotnetPackLocal.Commands
                 {
                     Handler = CommandHandler.Create(_nuGetRepositoryPathCommand.HandleGet)
                 },
-                new Command("set-nuget-repo", "Set configured NuGet repository path")
+                new Command("set-nuget-repo", "Set configured NuGet repository path (interactive mode)")
                 {
                     Handler = CommandHandler.Create(_nuGetRepositoryPathCommand.HandleSet)
                 }
