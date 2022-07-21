@@ -9,8 +9,8 @@
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>dotnet-pack-local</ToolCommandName>
         <Authors>Oleksandr Povar</Authors>
-        <RepositoryUrl>https://github.com/zvirja</RepositoryUrl>
-        <PackageProjectUrl>https://github.com/zvirja</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/zvirja/dotnet-pack-local</RepositoryUrl>
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
