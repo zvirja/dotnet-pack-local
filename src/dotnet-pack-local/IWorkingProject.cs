@@ -1,15 +1,14 @@
 ﻿using System;
 
-namespace DotnetPackLocal
+namespace DotnetPackLocal;
+
+internal interface IWorkingProject
 {
-    internal interface IWorkingProject
-    {
-        public string WorkingDir { get; }
-        public string NormalizedRepoPath { get; }
+    public string WorkingDir { get; }
+    public string NormalizedRepoPath { get; }
 
-        public Version GetLastVersion();
-        public void SetLastVersion(Version version);
+    public Version GetLastVersion();
+    public void SetLastVersion(Version version);
 
-        public Version AdvanceVersion();
-    }
+    public Version AdvanceVersion();
 }
