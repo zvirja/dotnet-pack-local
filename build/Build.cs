@@ -69,6 +69,7 @@ class Build : NukeBuild
         {
             DotNetBuild(c => c
                 .SetConfiguration(Configuration)
+                .EnableContinuousIntegrationBuild()
                 .SetProjectFile(Solution.Path)
                 .SetVerbosity(DotNetVerbosity.Minimal)
                 .AddProperty("AssemblyVersion", CurrentBuildVersion.AssemblyVersion)
@@ -83,6 +84,7 @@ class Build : NukeBuild
         {
             DotNetPack(c => c
                 .SetConfiguration(Configuration)
+                .EnableContinuousIntegrationBuild()
                 .SetProject(Solution.Path)
                 .SetOutputDirectory(ArtifactsDir)
                 .SetVerbosity(DotNetVerbosity.Minimal)
