@@ -69,12 +69,14 @@ class Build : NukeBuild
         {
             DotNetBuild(c => c
                 .SetConfiguration(Configuration)
-                .EnableContinuousIntegrationBuild()
                 .SetProjectFile(Solution.Path)
                 .SetVerbosity(DotNetVerbosity.Minimal)
-                .AddProperty("AssemblyVersion", CurrentBuildVersion.AssemblyVersion)
-                .AddProperty("FileVersion", CurrentBuildVersion.FileVersion)
-                .AddProperty("InformationalVersion", CurrentBuildVersion.InfoVersion)
+                .EnableContinuousIntegrationBuild()
+                // version
+                .SetVersion(CurrentBuildVersion.NuGetVersion)
+                .SetAssemblyVersion(CurrentBuildVersion.AssemblyVersion)
+                .SetFileVersion(CurrentBuildVersion.FileVersion)
+                .SetInformationalVersion(CurrentBuildVersion.InfoVersion)
             );
         });
 
@@ -84,15 +86,16 @@ class Build : NukeBuild
         {
             DotNetPack(c => c
                 .SetConfiguration(Configuration)
-                .EnableContinuousIntegrationBuild()
                 .SetProject(Solution.Path)
                 .SetOutputDirectory(ArtifactsDir)
                 .SetVerbosity(DotNetVerbosity.Minimal)
-                .SetVersion(CurrentBuildVersion.NuGetVersion)
-                .AddProperty("AssemblyVersion", CurrentBuildVersion.AssemblyVersion)
-                .AddProperty("FileVersion", CurrentBuildVersion.FileVersion)
-                .AddProperty("InformationalVersion", CurrentBuildVersion.InfoVersion)
+                .EnableContinuousIntegrationBuild()
                 .EnableNoRestore()
+                // version
+                .SetVersion(CurrentBuildVersion.NuGetVersion)
+                .SetAssemblyVersion(CurrentBuildVersion.AssemblyVersion)
+                .SetFileVersion(CurrentBuildVersion.FileVersion)
+                .SetInformationalVersion(CurrentBuildVersion.InfoVersion)
             );
         });
 
