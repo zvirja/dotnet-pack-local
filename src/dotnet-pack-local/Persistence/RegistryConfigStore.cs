@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.Versioning;
 using Microsoft.Win32;
 
 namespace DotnetPackLocal.Persistence
 {
+    [SupportedOSPlatform("windows")]
     internal class RegistryConfigStore : IConfigStore
     {
         private const string RegistryStoreKey = @"SOFTWARE\Zvirja\DotnetPackLocal";
