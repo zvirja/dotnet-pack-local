@@ -35,7 +35,7 @@ namespace DotnetPackLocal.Commands
 
             var dotnetArgs = $"pack " +
                              $"/p:Version={version} " +
-                             $"--output {output} " +
+                             $"--output \"{output}\" " +
                              $"--configuration {configuration} " +
                              (includeSymbols ? "/p:AllowedOutputExtensionsInPackageBuildOutputFolder=\\\".dll;.exe;.json;.xml;.pdb\\\" " : "") +
                              $"--verbosity=minimal ";
