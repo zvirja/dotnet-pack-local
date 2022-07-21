@@ -4,17 +4,25 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>DotnetPackLocal</RootNamespace>
         <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
 
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>dotnet-pack-local</ToolCommandName>
-        <LangVersion>latest</LangVersion>
+        <Authors>Oleksandr Povar</Authors>
+        <RepositoryUrl>https://github.com/zvirja</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/zvirja</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
         <PackageReference Include="Spectre.Console" Version="0.40.1-preview.0.13" />
-        <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.21308.1" /> 
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.21308.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\..\readme.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 </Project>
