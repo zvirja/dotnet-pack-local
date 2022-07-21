@@ -1,10 +1,11 @@
 bin/
 obj/
 /packages/
-riderModule.iml
-/_ReSharper.Caches/
+/artifacts/
+
 .idea
-.nuke/temp/
 
 .vs/
 *.user
+
+.nuke/temp/

@@ -4,24 +4,22 @@ using System.Text.RegularExpressions;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.CI.AppVeyor;
-using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities.Collections;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
-using static Nuke.Common.Logger;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using static Serilog.Log;
 
-[CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
 class Build : NukeBuild
 {
     public static int Main () => Execute<Build>(x => x.CompleteBuild);
 
     [Solution] readonly Solution Solution;
- 
+
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
@@ -36,13 +34,13 @@ class Build : NukeBuild
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath ArtifactsDir => RootDirectory / "artifacts";
-    
+
     BuildVersionInfo CurrentBuildVersion;
 
     Target CalculateVersion => _ => _
         .Executes(() =>
         {
-            Info($"Build version: {BuildVersionParam}");
+            Information($"Build version: {BuildVersionParam}");
 
             CurrentBuildVersion = BuildVersionParam switch
             {
@@ -50,8 +48,8 @@ class Build : NukeBuild
 
                 var ver => new BuildVersionInfo {AssemblyVersion = ver, FileVersion = ver, InfoVersion = ver, NuGetVersion = ver}
             };
-            
-            Info($"Calculated version: {CurrentBuildVersion}");
+
+            Information($"Calculated version: {CurrentBuildVersion}");
         });
 
     Target Clean => _ => _
@@ -64,7 +62,7 @@ class Build : NukeBuild
     Target Prepare => _ => _
         .DependsOn(CalculateVersion, Clean)
         .Executes(() => { });
-    
+
     Target Compile => _ => _
         .DependsOn(Prepare)
         .Executes(() =>
@@ -98,7 +96,7 @@ class Build : NukeBuild
 
     Target CompleteBuild => _ => _
         .DependsOn(Pack);
-    
+
     Target PublishNuGet => _ => _
         .Requires(() => NuGetKey)
         .DependsOn(Pack)
@@ -111,7 +109,7 @@ class Build : NukeBuild
                 .SetSource("https://www.nuget.org/api/v2/package/")
             );
         });
-    
+
     // ==============================================
     // ================== AppVeyor ==================
     // ==============================================
@@ -124,7 +122,7 @@ class Build : NukeBuild
         {
             var env = AppVeyorEnv;
             var trigger = ResolveAppVeyorTrigger();
-            Info($"Is tag: {env.RepositoryTag}, tag name: '{env.RepositoryTagName}', PR number: {env.PullRequestNumber?.ToString() ?? "<null>"}, branch name: '{env.RepositoryBranch}', trigger: {trigger}");
+            Information($"Is tag: {env.RepositoryTag}, tag name: '{env.RepositoryTagName}', PR number: {env.PullRequestNumber?.ToString() ?? "<null>"}, branch name: '{env.RepositoryBranch}', trigger: {trigger}");
         });
 
     Target AppVeyor_Pipeline => _ => _
@@ -135,7 +133,7 @@ class Build : NukeBuild
             if (trigger != AppVeyorTrigger.PR)
             {
                 AppVeyorEnv.UpdateBuildVersion(CurrentBuildVersion.FileVersion);
-                Info($"Updated build version to: '{CurrentBuildVersion.FileVersion}'");
+                Information($"Updated build version to: '{CurrentBuildVersion.FileVersion}'");
             }
         });
 
@@ -159,7 +157,7 @@ class Build : NukeBuild
         MasterBranch,
         UnknownBranchOrTag
     }
-    
+
     static AppVeyorTrigger ResolveAppVeyorTrigger()
     {
         var env = AppVeyor.Instance;
@@ -171,7 +169,7 @@ class Build : NukeBuild
         var tag = env.RepositoryTag ? env.RepositoryTagName : null;
         var isPr = env.PullRequestNumber != null;
         var branchName = env.RepositoryBranch;
-        
+
         return (tag, isPr, branchName) switch
         {
             ({ } t, _, _) when Regex.IsMatch(t, "^v\\d.*") => AppVeyorTrigger.SemVerTag,
