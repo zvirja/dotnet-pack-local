@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using Spectre.Console;
 
 namespace DotnetPackLocal.Commands;
@@ -14,6 +15,7 @@ internal class PackRepoCommand
 
     public int Handle(string output, bool release, bool? symbols)
     {
+        output = output.TrimEnd(Path.DirectorySeparatorChar);
         AnsiConsole.MarkupLine("[olive]NuGet output folder:[/] {0}", output);
 
         var workingDir = _workingProject.WorkingDir;
