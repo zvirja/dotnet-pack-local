@@ -26,7 +26,7 @@ class Build : NukeBuild
 
     [Parameter(Name = "BuildNumber")] readonly int BuildNumberParam = 0;
 
-    [Secret] [Parameter("API Key used to publish package to NuGet", Name = "NUGET_KEY")] readonly string NuGetKey;
+    [Secret] [Parameter("API Key used to publish package to NuGet", Name = "NUGET_API_KEY")] readonly string NuGetApiKey;
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath ArtifactsDir => RootDirectory / "artifacts";
@@ -101,14 +101,14 @@ class Build : NukeBuild
         .DependsOn(Pack);
 
     Target PublishNuGet => _ => _
-        .Requires(() => NuGetKey)
+        .Requires(() => NuGetApiKey)
         .DependsOn(Pack)
         .Executes(() =>
         {
             var nugetPackage = ArtifactsDir.GlobFiles("*.nupkg").Single();
             DotNetNuGetPush(c => c
                 .SetTargetPath(nugetPackage)
-                .SetApiKey(NuGetKey)
+                .SetApiKey(NuGetApiKey)
                 .SetSource("https://www.nuget.org/api/v2/package/")
             );
         });
