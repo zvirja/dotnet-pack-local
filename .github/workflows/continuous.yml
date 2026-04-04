@@ -1,0 +1,36 @@
+name: Continuous
+
+on:
+  push
+
+jobs:
+  build-and-publish:
+    permissions:
+      id-token: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        global-json-file: global.json
+
+    # Get a short-lived NuGet API key
+    - name: NuGet login (OIDC → temp API key)
+      uses: NuGet/login@v1
+      with:
+        user: ${{ secrets.NUGET_USER }}
+
+    - name: Enable build
+      run: chmod +x ./build.sh
+
+    - name: Run build
+      run: >
+        ./build.sh --target CI_Pipeline --build-version git  --build-number $GITHUB_RUN_NUMBER --no-logo
+      env:
+        NUGET_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}

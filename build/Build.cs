@@ -26,7 +26,7 @@ class Build : NukeBuild
 
     [Parameter(Name = "BuildNumber")] readonly int BuildNumberParam = 0;
 
-    [Parameter("API Key used to publish package to NuGet", Name = "nuget-key")] readonly string NuGetKey;
+    [Secret] [Parameter("API Key used to publish package to NuGet", Name = "NUGET_KEY")] readonly string NuGetKey;
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath ArtifactsDir => RootDirectory / "artifacts";
