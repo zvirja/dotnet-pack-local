@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnet-pack-local", "dotnet-pack-local\dotnet-pack-local.csproj", "{1316B6F3-06AC-4CEA-901D-AE923A8F161A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnet-pack-local", "src\dotnet-pack-local\dotnet-pack-local.csproj", "{1316B6F3-06AC-4CEA-901D-AE923A8F161A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "..\build\_build.csproj", "{E7BD822E-52FE-4484-B905-486CBCF6E9BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{E7BD822E-52FE-4484-B905-486CBCF6E9BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

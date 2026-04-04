@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.CommandLine.Help;
 using System.CommandLine.Invocation;
 
 namespace DotnetPackLocal.Commands;
@@ -18,11 +19,14 @@ internal class RootCommandBuilder
 
     public RootCommand BuildRootCommand(string nugetRepositoryPath)
     {
+
+
         var rootCmd = new RootCommand("Pack current folder as NuGet")
         {
             new Option<string>(new[] {"--output", "-o"}, () => nugetRepositoryPath, "Output path for NuGet packages"),
             new Option<bool>("--release", "Pack project in release mode"),
             new Option<bool?>("--symbols", () => null, "Specify whether to include symbols. By default included in DEBUG build only"),
+
 
             new Command("get-last-version", "Get last version for current repo")
             {
