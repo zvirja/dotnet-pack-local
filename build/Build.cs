@@ -26,8 +26,6 @@ class Build : NukeBuild
 
     [Parameter(Name = "BuildNumber")] readonly int BuildNumberParam = 0;
 
-    [Secret] [Parameter("API Key used to publish package to NuGet", Name = "NUGET_API_KEY")] readonly string NuGetApiKey;
-
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath ArtifactsDir => RootDirectory / "artifacts";
 
@@ -99,72 +97,4 @@ class Build : NukeBuild
 
     Target CompleteBuild => _ => _
         .DependsOn(Pack);
-
-    Target PublishNuGet => _ => _
-        .Requires(() => NuGetApiKey)
-        .DependsOn(Pack)
-        .Executes(() =>
-        {
-            var nugetPackage = ArtifactsDir.GlobFiles("*.nupkg").Single();
-            DotNetNuGetPush(c => c
-                .SetTargetPath(nugetPackage)
-                .SetApiKey(NuGetApiKey)
-                .SetSource("https://www.nuget.org/api/v2/package/")
-            );
-        });
-
-    // ==============================================
-    // ===================== CI =====================
-    // ==============================================
-
-    Target CI_DescribeState => _ => _
-        .Before(Prepare)
-        .Executes(() =>
-        {
-            var trigger = ResolveCITrigger();
-            Information($"Build type: {GitHubActions.RefType}, Ref name: '{GitHubActions.RefName}', Is PR: {GitHubActions.IsPullRequest}, trigger: {trigger}");
-        });
-
-    Target CI_Pipeline => _ => _
-        .DependsOn(ResolveCITarget(this), CI_DescribeState);
-
-    static Target ResolveCITarget(Build build)
-    {
-        var trigger = ResolveCITrigger();
-        return trigger switch
-        {
-            CITrigger.SemVerTag => build.PublishNuGet,
-            _ => build.CompleteBuild
-        };
-    }
-
-    enum CITrigger
-    {
-        Invalid,
-        SemVerTag,
-        PR,
-        MainBranch,
-        UnknownBranchOrTag
-    }
-
-    static CITrigger ResolveCITrigger()
-    {
-        var env = GitHubActions.Instance;
-        if (env == null)
-        {
-            return CITrigger.Invalid;
-        }
-
-        var tag = env.RefType == "tag" ? env.RefName : null;
-        var isPr = env.IsPullRequest;
-        var branchName = env.RefName;
-
-        return (tag, isPr, branchName) switch
-        {
-            (tag: { } t, _, _) when Regex.IsMatch(t, "^v\\d.*") => CITrigger.SemVerTag,
-            (_, isPr: true, _) => CITrigger.PR,
-            (_, _, branchName: "main") => CITrigger.MainBranch,
-            _ => CITrigger.UnknownBranchOrTag
-        };
-    }
 }
