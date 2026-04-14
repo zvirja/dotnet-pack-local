@@ -34,7 +34,6 @@ jobs:
     needs: build
     permissions:
       id-token: write
-    environment: nuget-push
     runs-on: ubuntu-latest
 
     steps:
